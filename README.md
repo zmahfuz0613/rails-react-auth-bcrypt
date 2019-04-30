@@ -62,7 +62,7 @@ end
 
 ```
 
-[has_secure_password](https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html) has built-in validations for passwords. It will ensure that a password is provided. It will also automatically create a password hash from a provided password and set it as the `password_digest` when creating a user. We also have access to a method called [authenticate](https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/InstanceMethodsOnActivation.html#method-i-authenticate) that will verify a given password attempt against a users password_digest. For now, lets just start by adding `has_secure_password` to our User model
+[has_secure_password](https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html) has built-in validations for passwords. It will ensure that a password is provided. It will also automatically create a password hash from a provided password and set it as the `password_digest` when creating a user. We also have access to a method called [authenticate](https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/InstanceMethodsOnActivation.html#method-i-authenticate) that will verify a given password attempt against a user's password_digest. For now, lets just start by adding `has_secure_password` to our User model
 
 Since Bcrypt will take a password and create a password_digest for us, our `UsersController` needs to permit a `:password` instead of a `:password_digest` inside of our private `user_params` method:
 
@@ -76,7 +76,7 @@ Since Bcrypt will take a password and create a password_digest for us, our `User
 
 ### Validating passwords
 
-We can always add some more customer validation to our passwords. For this app, lets try this:
+We can always add some more custome validation to our passwords. For this app, lets try this:
 
 ```ruby
 
@@ -113,11 +113,11 @@ end
 
 ```
 
-Here we make sure that both the username and email are unique and present. For the email, we check to make sure that the a proper email format was provided. We do this using [URI](https://ruby-doc.org/stdlib-2.1.1/libdoc/uri/rdoc/URI.html) which stands for Uniform Resoure Identifers. URI is a baked in module in Rails.
+Here we make sure that both the username and email are unique and present. For the email, we check to make sure that a proper email format was provided. We do this using [URI](https://ruby-doc.org/stdlib-2.1.1/libdoc/uri/rdoc/URI.html) which stands for Uniform Resoure Identifers. URI is a baked in module in Rails.
 
 ## JSON Web Tokens
 
-For tracking the logged in user on our front end, we will be sending a [JWT](https://github.com/jwt/ruby-jwt). But first lets implement that on our backend. We can start by adding it to our `Gemfile`:
+For tracking the logged in users on our front end, we will be sending a [JWT](https://github.com/jwt/ruby-jwt). But first lets implement that on our backend. We can start by adding it to our `Gemfile`:
 
 ```ruby
 
@@ -150,9 +150,9 @@ end
 
 ```
 
-The token is encoded and decoded with the built in Rails secret key. It also require an expiration time which we have set for 24 hours.
+The token is encoded and decoded with the built in Rails secret key. It also requires an expiration time, which we have set for 24 hours.
 
-In order for us to have access to this class, we need to add the `/lib` directory to be loaded when we run our API server. To do this we can add the following line of code to `/config/application.rb`:
+In order for us to have access to this class, we need to add the `/lib` directory to be loaded when we run our API server. To do this, we can add the following line of code to `/config/application.rb`:
 
 ```ruby
 
@@ -160,7 +160,7 @@ config.autoload_paths << Rails.root.join('lib')
 
 ```
 
-Now we are all set to use JWT with our custom helper methods.
+Now, we are all set to use JWT with our custom helper methods.
 
 ## Authentication
 
@@ -174,7 +174,7 @@ rails g controller Authentication
 
 ```
 
-In our authetication controller we need to define a method that will verify login credentials and return a JSON web token:
+In our authetication controller, we need to define a method that will verify login credentials and return a JSON web token:
 
 ```ruby
 
@@ -200,7 +200,7 @@ end
 
 ```
 
-Here we are first find the user based on the provided username. We then use the Bcrypt helper method `.authenticate` to verify that the provided password matches the encoded `password_digest` from our database for our user.
+Here, we first find the user based on the provided username. We then use the Bcrypt helper method `.authenticate` to verify that the provided password matches the encoded `password_digest` from our database for our user.
 
 We then use our `JsonWebToken.encode` method to create a token with the user's `id` and `username` inside the token.
 
@@ -246,7 +246,7 @@ end
 
 ```
 
-Our `authorize_request` method firs grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `JsonWebToken.decode` helper method to pull the user info from the token. Then we can set an instanse variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
+Our `authorize_request` method first grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `JsonWebToken.decode` helper method to pull the user info from the token. Then we can set an instanse variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
 
 We can test this out by adding a before action to our `UsersController`:
 
