@@ -13,7 +13,7 @@
 
 *After this lesson, students will be able to:*
 - Understand how to set and retrieve data from `jwt`
-- Know how to set and check passwords using `BCrypt`
+- Know how to set and check passwords using `Bcrypt`
 - Understand how to keep track of a `current_user`
 - Be able to create a Rails app with Auth and a React front end
   - Not from memory, but from following along with an example
@@ -76,7 +76,7 @@ Since Bcrypt will take a password and create a password_digest for us, our `User
 
 ### Validating passwords
 
-We can always add some more custome validation to our passwords. For this app, lets try this:
+We can always add some more custom validation to our passwords. For this app, lets try this:
 
 ```ruby
 
