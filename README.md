@@ -1,11 +1,10 @@
-# ![](https://ga-dash.s3.amazonaws.com/production/assets/logo-9f88ae6c9c3871690e33280fcf557f33.png)  WEB DEVELOPMENT IMMERSIVE
+# ![](https://ga-dash.s3.amazonaws.com/production/assets/logo-9f88ae6c9c3871690e33280fcf557f33.png)  SOFTWARE ENGINEERING IMMERSIVE
 
 ## Getting started
 
 1. Fork
 1. Create a feature branch
 1. Clone
-1. Pull Request
 
 # Rails Auth
 
@@ -13,7 +12,7 @@
 
 *After this lesson, students will be able to:*
 - Understand how to set and retrieve data from `jwt`
-- Know how to set and check passwords using `Bcrypt`
+- Know how to set and check passwords using `BCrypt`
 - Understand how to keep track of a `current_user`
 - Be able to create a Rails app with Auth and a React front end
   - Not from memory, but from following along with an example
@@ -76,22 +75,20 @@ Since Bcrypt will take a password and create a password_digest for us, our `User
 
 ### Validating passwords
 
-We can always add some more custom validation to our passwords. For this app, lets try this:
+We can always add some more custome validation to our passwords. For this app, lets try this:
 
 ```ruby
 
 class User < ApplicationRecord
   has_secure_password
 
-validates :password,
-            length: { minimum: 6 },
-            if: -> { new_record? || !password.nil? }
+  validates :password, length: { minimum: 6 }
 
 end
 
 ```
 
-`new_record?` is a method baked into Rails that will check to see if an ActiveRecord object has been saved to the database yet. As implied by the `?`, it returns true or false. This validation say for every new entry, the password must be a minimum of 6 characters long.
+This validation says for every new entry, the password must be a minimum of 6 characters long.
 
 ### Other User Validations
 
@@ -105,9 +102,7 @@ class User < ApplicationRecord
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :password,
-            length: { minimum: 6 },
-            if: -> { new_record? || !password.nil? }
+  validates :password, length: { minimum: 6 }
 
 end
 
@@ -128,13 +123,11 @@ gem 'jwt'
 
 Don't forget to `Bundle install`!
 
-For the JWT gem package, we're going to make a custom class with some methods to help us out. This will help keep our controllers small and organized. In our `/lib` directory, lets make a new file called `json_web_token.rb`.
-
-Inside this file, we will add two methods for encoding and decoding tokens:
+For the JWT gem package, we're going to make a methods to our `ApplicationController`. Inside of `/app/controllers/application_controller.rb`, we will add two methods for encoding and decoding tokens:
 
 ```ruby
 
-class JsonWebToken
+class ApplicationController < ActionController::API
   SECRET_KEY = Rails.application.secrets.secret_key_base.to_s
 
   def self.encode(payload, exp = 24.hours.from_now)
@@ -151,14 +144,6 @@ end
 ```
 
 The token is encoded and decoded with the built in Rails secret key. It also requires an expiration time, which we have set for 24 hours.
-
-In order for us to have access to this class, we need to add the `/lib` directory to be loaded when we run our API server. To do this, we can add the following line of code to `/config/application.rb`:
-
-```ruby
-
-config.autoload_paths << Rails.root.join('lib')
-
-```
 
 Now, we are all set to use JWT with our custom helper methods.
 
@@ -184,7 +169,7 @@ class AuthenticationController < ApplicationController
   def login
     @user = User.find_by_username(params[:username])
     if @user.authenticate(params[:password]) #authenticate method provided by Bcrypt and 'has_secure_password'
-      token = JsonWebToken.encode(user_id: @user.id, username: @user.username)
+      token = encode(user_id: @user.id, username: @user.username)
       render json: { token: token }, status: :ok
     else
       render json: { error: 'unauthorized' }, status: :unauthorized
@@ -202,7 +187,7 @@ end
 
 Here, we first find the user based on the provided username. We then use the Bcrypt helper method `.authenticate` to verify that the provided password matches the encoded `password_digest` from our database for our user.
 
-We then use our `JsonWebToken.encode` method to create a token with the user's `id` and `username` inside the token.
+We then use our `encode` method to create a token with the user's `id` and `username` inside the token.
 
 ### Login Route
 
@@ -233,7 +218,7 @@ class ApplicationController < ActionController::API
     header = request.headers['Authorization']
     header = header.split(' ').last if header
     begin
-      @decoded = JsonWebToken.decode(header)
+      @decoded = decode(header)
       @current_user = User.find(@decoded[:user_id])
     rescue ActiveRecord::RecordNotFound => e
       render json: { errors: e.message }, status: :unauthorized
@@ -246,7 +231,7 @@ end
 
 ```
 
-Our `authorize_request` method first grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `JsonWebToken.decode` helper method to pull the user info from the token. Then we can set an instanse variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
+Our `authorize_request` method first grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `decode` helper method to pull the user info from the token. Then we can set an instanse variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
 
 We can test this out by adding a before action to our `UsersController`:
 
@@ -275,7 +260,7 @@ In short:
 
 - JWT is used to encrypt user data and also authorize our controller actions
 
-- We created a custome JsonWebToken class and added it to the Rails autoload paths
+- We created a custom jwt methods for encoding and decoding tokens
 
 - We created an AuthorizationController and endpoint in our routes to handle logins
 
