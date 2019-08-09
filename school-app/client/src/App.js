@@ -36,16 +36,6 @@ class App extends Component {
         password: ""
       }
     };
-    this.handleFormChange = this.handleFormChange.bind(this)
-    this.mountEditForm = this.mountEditForm.bind(this)
-    this.editTeacher = this.editTeacher.bind(this)
-    this.deleteTeacher = this.deleteTeacher.bind(this)
-    this.newTeacher = this.newTeacher.bind(this)
-    this.handleLoginButton = this.handleLoginButton.bind(this)
-    this.handleLogin = this.handleLogin.bind(this)
-    this.handleRegister = this.handleRegister.bind(this)
-    this.handleLogout = this.handleLogout.bind(this)
-    this.authHandleChange = this.authHandleChange.bind(this)
   }
 
   componentDidMount() {
@@ -59,14 +49,14 @@ class App extends Component {
     }
   }
 
-  async getTeachers() {
+  getTeachers = async () => {
     const teachers = await readAllTeachers();
     this.setState({
       teachers
     })
   }
 
-  async newTeacher(e) {
+  newTeacher = async (e) => {
     e.preventDefault();
     const teacher = await createTeacher(this.state.teacherForm);
     this.setState(prevState => ({
@@ -78,7 +68,7 @@ class App extends Component {
     }))
   }
 
-  async editTeacher() {
+  editTeacher = async () => {
     const { teacherForm } = this.state
     await updateTeacher(teacherForm.id, teacherForm);
     this.setState(prevState => (
@@ -88,14 +78,14 @@ class App extends Component {
     ))
   }
 
-  async deleteTeacher(id) {
+  deleteTeacher = async (id) => {
     await destroyTeacher(id);
     this.setState(prevState => ({
       teachers: prevState.teachers.filter(teacher => teacher.id !== id)
     }))
   }
 
-  handleFormChange(e) {
+  handleFormChange = (e) => {
     const { name, value } = e.target;
     this.setState(prevState => ({
       teacherForm: {
@@ -105,7 +95,7 @@ class App extends Component {
     }))
   }
 
-  async mountEditForm(id) {
+  mountEditForm = async (id) => {
     const teachers = await readAllTeachers();
     const teacher = teachers.find(el => el.id === parseInt(id));
     this.setState({
@@ -115,11 +105,11 @@ class App extends Component {
 
   // -------------- AUTH ------------------
 
-  handleLoginButton() {
+  handleLoginButton = () => {
     this.props.history.push("/login")
   }
 
-  async handleLogin() {
+  handleLogin = async () => {
     const userData = await loginUser(this.state.authFormData);
     this.setState({
       currentUser: decode(userData.token)
@@ -127,20 +117,20 @@ class App extends Component {
     localStorage.setItem("jwt", userData.token)
   }
 
-  async handleRegister(e) {
+  handleRegister = async (e) => {
     e.preventDefault();
     await registerUser(this.state.authFormData);
     this.handleLogin();
   }
 
-  handleLogout() {
+  handleLogout = () => {
     localStorage.removeItem("jwt");
     this.setState({
       currentUser: null
     })
   }
 
-  authHandleChange(e) {
+  authHandleChange = (e) => {
     const { name, value } = e.target;
     this.setState(prevState => ({
       authFormData: {
@@ -161,15 +151,15 @@ class App extends Component {
             }
           })}>School App</Link></h1>
           <div>
-          {this.state.currentUser
-            ?
-            <>
-              <p>{this.state.currentUser.username}</p>
-              <button onClick={this.handleLogout}>logout</button>
-            </>
-            :
-            <button onClick={this.handleLoginButton}>Login/register</button>
-          }
+            {this.state.currentUser
+              ?
+              <>
+                <p>{this.state.currentUser.username}</p>
+                <button onClick={this.handleLogout}>logout</button>
+              </>
+              :
+              <button onClick={this.handleLoginButton}>Login/register</button>
+            }
           </div>
         </header>
         <Route exact path="/login" render={() => (

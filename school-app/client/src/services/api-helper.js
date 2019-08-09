@@ -1,41 +1,24 @@
+import axios from 'axios';
+
 const baseUrl = 'http://localhost:3000'
 
-export const loginUser = (loginData) => {
-  const opts = {
-    method: 'POST',
-    body: JSON.stringify(loginData),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
+const api = axios.create({
+  baseURL: baseUrl
+})
 
-  return fetch(`${baseUrl}/auth/login`, opts)
-    .then(resp => resp.json())
+export const loginUser = (loginData) => {
+  const resp = api.port('/auth/login', loginData)
+  return resp.data
 }
 
 export const registerUser = (registerData) => {
-  const opts = {
-    method: 'POST',
-    body: JSON.stringify(registerData),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  return fetch(`${baseUrl}/users/`, opts)
-    .then(resp => resp.json())
+  const resp = api.post('/users/', registerData)
+  return resp.data
 }
 
 const createTeacher = (data) => {
-  const opts = {
-    method: 'POST',
-    body: JSON.stringify({ teacher: data }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }
-  return fetch(`${baseUrl}/teachers`, opts)
-    .then(resp => resp.json())
+  const resp = api.post('/teachers', {teacher: data})
+  return resp.data
 }
 
 const readAllTeachers = () => {
@@ -44,22 +27,13 @@ const readAllTeachers = () => {
 }
 
 const updateTeacher = (id, data) => {
-  const opts = {
-    method: 'PUT',
-    body: JSON.stringify({ teacher: data }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }
-  return fetch(`${baseUrl}/teachers/${id}`, opts)
-    .then(resp => resp.json())
+  const resp = api.put(`/teachers/${id}`, {teacher: data})
+  return resp.data
 }
 
 const destroyTeacher = (id) => {
-  const opts = {
-    method: 'DELETE'
-  }
-  return fetch(`${baseUrl}/teachers/${id}`, opts)
+  const resp = api.delete(`/teachers/${id}`)
+  return resp.data
 }
 
 export {
