@@ -3,7 +3,6 @@
 ## Getting started
 
 1. Fork
-1. Create a feature branch
 1. Clone
 
 # Rails Auth
