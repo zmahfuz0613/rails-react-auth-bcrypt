@@ -7,12 +7,12 @@ const api = axios.create({
 })
 
 export const loginUser = async(loginData) => {
-  const resp = await api.port('/auth/login', loginData)
+  const resp = await api.post('/auth/login', loginData)
   return resp.data
 }
 
 export const registerUser = async(registerData) => {
-  const resp = await api.post('/users/', registerData)
+  const resp = await api.post('/users/', {user: registerData})
   return resp.data
 }
 
