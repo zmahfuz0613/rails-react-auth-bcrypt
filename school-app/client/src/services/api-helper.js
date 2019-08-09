@@ -6,33 +6,33 @@ const api = axios.create({
   baseURL: baseUrl
 })
 
-export const loginUser = (loginData) => {
-  const resp = api.port('/auth/login', loginData)
+export const loginUser = async(loginData) => {
+  const resp = await api.port('/auth/login', loginData)
   return resp.data
 }
 
-export const registerUser = (registerData) => {
-  const resp = api.post('/users/', registerData)
+export const registerUser = async(registerData) => {
+  const resp = await api.post('/users/', registerData)
   return resp.data
 }
 
-const createTeacher = (data) => {
-  const resp = api.post('/teachers', {teacher: data})
+const createTeacher = async(data) => {
+  const resp = await api.post('/teachers', {teacher: data})
   return resp.data
 }
 
-const readAllTeachers = () => {
-  return fetch(`${baseUrl}/teachers`)
-    .then(resp => resp.json())
-}
-
-const updateTeacher = (id, data) => {
-  const resp = api.put(`/teachers/${id}`, {teacher: data})
+const readAllTeachers = async() => {
+  const resp = await api.get('/teachers')
   return resp.data
 }
 
-const destroyTeacher = (id) => {
-  const resp = api.delete(`/teachers/${id}`)
+const updateTeacher = async(id, data) => {
+  const resp = await api.put(`/teachers/${id}`, {teacher: data})
+  return resp.data
+}
+
+const destroyTeacher = async(id) => {
+  const resp = await api.delete(`/teachers/${id}`)
   return resp.data
 }
 
