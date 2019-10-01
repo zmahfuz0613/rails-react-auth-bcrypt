@@ -33,7 +33,6 @@ All we will need two encryption gems and the rest is handled by our own code!
 For this app, our users will have a username, an email, and for auth, we will give them a password_digest. Let's create that in terminal now:
 
 ```shell
-
 rails g scaffold User username:string email:string password_digest:string
 
 ```
@@ -45,7 +44,6 @@ For this lesson we will be using [`bcrypt`](https://github.com/codahale/bcrypt-r
 Of course, with a new gem we need to:
 
 ```shell
-
 bundle install
 
 ```
@@ -53,7 +51,6 @@ bundle install
 Bcrypt comes with a number of handy features in Rails that just adds to the Rails magic. The first worth noting is a method which we can call in the user model:
 
 ```ruby
-
 class User < ApplicationRecord
   has_secure_password
 end
@@ -65,7 +62,6 @@ end
 Since Bcrypt will take a password and create a password_digest for us, our `UsersController` needs to permit a `:password` instead of a `:password_digest` inside of our private `user_params` method:
 
 ```ruby
-
   def user_params
     params.require(:user).permit( :username, :email, :password )
   end
@@ -77,7 +73,6 @@ Since Bcrypt will take a password and create a password_digest for us, our `User
 We can always add some more custome validation to our passwords. For this app, lets try this:
 
 ```ruby
-
 class User < ApplicationRecord
   has_secure_password
 
@@ -94,7 +89,6 @@ This validation says for every new entry, the password must be a minimum of 6 ch
 While we're at it, let's add some validations for username and email as well:
 
 ```ruby
-
 class User < ApplicationRecord
   has_secure_password
 
@@ -114,7 +108,6 @@ Here we make sure that both the username and email are unique and present. For t
 For tracking the logged in users on our front end, we will be sending a [JWT](https://github.com/jwt/ruby-jwt). But first lets implement that on our backend. We can start by adding it to our `Gemfile`:
 
 ```ruby
-
 # Use Json Web Token (JWT) for token based authentication
 gem 'jwt'
 
@@ -125,7 +118,6 @@ Don't forget to `Bundle install`!
 For the JWT gem package, we're going to make a methods to our `ApplicationController`. Inside of `/app/controllers/application_controller.rb`, we will add two methods for encoding and decoding tokens:
 
 ```ruby
-
 class ApplicationController < ActionController::API
   SECRET_KEY = Rails.application.secrets.secret_key_base.to_s
 
@@ -153,7 +145,6 @@ Now, we are all set to use JWT with our custom helper methods.
 Our `UsersController` right now does not have any way to login/authenticate a user nor does it return a JSON web token. Additionally we do not have an endpoint in our routes for this either. We can fix this be creating a new controller for authentication.
 
 ```shell
-
 rails g controller Authentication
 
 ```
@@ -161,19 +152,25 @@ rails g controller Authentication
 In our authetication controller, we need to define a method that will verify login credentials and return a JSON web token:
 
 ```ruby
-
 class AuthenticationController < ApplicationController
+  before_action :authorize_request, except: :login
 
   # POST /auth/login
   def login
     @user = User.find_by_username(params[:username])
     if @user.authenticate(params[:password]) #authenticate method provided by Bcrypt and 'has_secure_password'
       token = encode(user_id: @user.id, username: @user.username)
-      render json: { token: token }, status: :ok
+      render json: { user: @user, token: token }, status: :ok
     else
       render json: { error: 'unauthorized' }, status: :unauthorized
     end
   end
+  
+  # GET /auth/verify
+	def verify
+	  render json: @current_user, status: :ok
+	end
+
 
   private
 
@@ -193,9 +190,9 @@ We then use our `encode` method to create a token with the user's `id` and `user
 In our `routes.rb` we just need to add a line of code that directs to our new authentication method:
 
 ```ruby
-
 Rails.application.routes.draw do
   post '/auth/login', to: 'authentication#login'
+  get '/auth/verify', to: 'authentication#verify'
   resources :users
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
@@ -210,7 +207,6 @@ end
 So now we can create new Users. We can also authenticate a login attempt. We also want to have a way to authenticate requests from that have logged in. We can do this by creating a method that authorizes a request based on the authorization header. Since we want this method to be available for all controllers, we can define this method in `ApplicationController`. Since all other controller inherit from `ApplicationController` any method defined there will be available to us in any controller.
 
 ```ruby
-
 class ApplicationController < ActionController::API
 
   def authorize_request
@@ -235,7 +231,6 @@ Our `authorize_request` method first grabs the auth header. It then splits out t
 We can test this out by adding a before action to our `UsersController`:
 
 ```ruby
-
 before_action :authorize_request, except: :create
 
 ```
@@ -243,7 +238,6 @@ before_action :authorize_request, except: :create
 We can also add it to our `TeachersController`:
 
 ```ruby
-
 before_action :authorize_request, except: %i[index show]
 
 ```

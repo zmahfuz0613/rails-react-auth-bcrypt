@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
-import decode from 'jwt-decode';
 
 import TeachersView from './components/TeachersView';
 import TeacherPage from './components/TeacherPage';
@@ -15,7 +14,8 @@ import {
   updateTeacher,
   destroyTeacher,
   loginUser,
-  registerUser
+  registerUser,
+  verifyUser
 } from './services/api-helper'
 
 import './App.css';
@@ -38,14 +38,11 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getTeachers();
-    const checkUser = localStorage.getItem("jwt");
-    if (checkUser) {
-      const user = decode(checkUser);
-      this.setState({
-        currentUser: user
-      })
+    const currentUser = await verifyUser();
+    if (currentUser) {
+      this.setState({ currentUser })
     }
   }
 
@@ -110,17 +107,14 @@ class App extends Component {
   }
 
   handleLogin = async () => {
-    const userData = await loginUser(this.state.authFormData);
-    this.setState({
-      currentUser: decode(userData.token)
-    })
-    localStorage.setItem("jwt", userData.token)
+    const currentUser = await loginUser(this.state.authFormData);
+    this.setState({ currentUser });
   }
 
   handleRegister = async (e) => {
     e.preventDefault();
-    await registerUser(this.state.authFormData);
-    this.handleLogin();
+    const currentUser = await registerUser(this.state.authFormData);
+    this.setState({ currentUser });
   }
 
   handleLogout = () => {
