@@ -167,9 +167,9 @@ class AuthenticationController < ApplicationController
   end
   
   # GET /auth/verify
-	def verify
-	  render json: @current_user, status: :ok
-	end
+  def verify
+    render json: @current_user, status: :ok
+  end
 
 
   private
