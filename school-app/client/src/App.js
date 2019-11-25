@@ -19,6 +19,7 @@ import {
 } from './services/api-helper'
 
 import './App.css';
+import Header from './components/Header';
 
 class App extends Component {
   constructor(props) {
@@ -70,7 +71,9 @@ class App extends Component {
     await updateTeacher(teacherForm.id, teacherForm);
     this.setState(prevState => (
       {
-        teachers: prevState.teachers.map(teacher => teacher.id === teacherForm.id ? teacherForm : teacher),
+        teachers: prevState.teachers.map(teacher => {
+          return teacher.id === teacherForm.id ? teacherForm : teacher
+        }),
       }
     ))
   }
@@ -98,6 +101,15 @@ class App extends Component {
     this.setState({
       teacherForm: teacher
     });
+  }
+
+  resetForm = () => {
+    this.setState({
+      teacherForm: {
+        name: "",
+        photo: ""
+      }
+    })
   }
 
   // -------------- AUTH ------------------
@@ -136,26 +148,12 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <header>
-          <h1><Link to='/' onClick={() => this.setState({
-            teacherForm: {
-              name: "",
-              photo: ""
-            }
-          })}>School App</Link></h1>
-          <div>
-            {this.state.currentUser
-              ?
-              <>
-                <p>{this.state.currentUser.username}</p>
-                <button onClick={this.handleLogout}>logout</button>
-              </>
-              :
-              <button onClick={this.handleLoginButton}>Login/register</button>
-            }
-          </div>
-        </header>
+      <div className="App" >
+        <Header
+          handleLoginButton={this.handleLoginButton}
+          handleLogout={this.handleLogout}
+          currentUser={this.state.currentUser}
+        />
         <Route exact path="/login" render={() => (
           <Login
             handleLogin={this.handleLogin}
