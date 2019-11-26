@@ -130,7 +130,7 @@ class App extends Component {
   }
 
   handleLogout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("authToken");
     this.setState({
       currentUser: null
     })

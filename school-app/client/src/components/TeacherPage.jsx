@@ -3,7 +3,7 @@ import EditTeacher from './EditTeacher'
 import { Route } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
-class TeachersView extends Component {
+class TeachersPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,4 +54,4 @@ class TeachersView extends Component {
   }
 }
 
-export default withRouter(TeachersView);
+export default withRouter(TeachersPage);
