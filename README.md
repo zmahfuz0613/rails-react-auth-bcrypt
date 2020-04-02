@@ -180,7 +180,7 @@ class AuthenticationController < ApplicationController
       token = encode(user_id: @user.id, username: @user.username)
       render json: { user: @user, token: token }, status: :ok
     else
-      render json: { error: 'unauthorized' }, status: :unauthorized
+      render json: { errors: 'unauthorized' }, status: :unauthorized
     end
   end
   
