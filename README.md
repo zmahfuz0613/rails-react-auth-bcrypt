@@ -4,6 +4,10 @@
 
 1. Fork
 1. Clone
+2. `cd` into the `school-app/` directory
+3. `bundle`
+4. `cd` into `client/`
+5. `npm i`
 
 # Rails Auth
 
@@ -162,7 +166,7 @@ rails g controller Authentication
 
 ```
 
-In our authetication controller, we need to define a method that will verify login credentials and return a JSON web token:
+In our authentication controller, we need to define a method that will verify login credentials and return a JSON web token:
 
 ```ruby
 class AuthenticationController < ApplicationController
@@ -188,7 +192,7 @@ class AuthenticationController < ApplicationController
   private
 
   def login_params
-    params.permit(:username, :password)
+    params.require(:auth).permit(:username, :password)
   end
 end
 
@@ -251,7 +255,7 @@ before_action :authorize_request, except: :create
 We can also add it to our `TeachersController`:
 
 ```ruby
-before_action :authorize_request, except: %i[index show]
+before_action :authorize_request, except: [:index, :show]
 
 ```
 
