@@ -8,6 +8,7 @@
 3. `bundle`
 4. `cd` into `client/`
 5. `npm i`
+6. `cd .. (go back into the rails directory)`
 
 # Rails Auth
 
