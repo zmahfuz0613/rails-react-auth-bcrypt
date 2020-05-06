@@ -1,5 +1,6 @@
 class TeachersController < ApplicationController
-  before_action :set_teacher, only: %i[show update destroy]
+  before_action :set_teacher, only: [:show, :update, :destroy]
+  before_action :authorize_request, only: [:create, :update, :destroy]
 
   # GET /teachers
   def index
@@ -42,8 +43,6 @@ class TeachersController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_teacher
     @teacher = Teacher.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'no teacher matches that ID' }, status: 404
   end
 
   # Only allow a trusted parameter "white list" through.
