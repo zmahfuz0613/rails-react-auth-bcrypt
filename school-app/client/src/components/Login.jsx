@@ -1,27 +1,57 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 
 // This component handles our login form and has a link to the register form
-const Login = (props) => {
+class Login extends Component {
+  state = {
+    username: "",
+    password: ""
+  }
 
-  return (
-    <div className="auth-container">
-      <h2>login</h2>
-      <hr />
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        props.handleLogin();}} >
-        <p>Username:</p>
-        <input name="username" type="text" value={props.formData.username} onChange={props.handleChange} />
-        <p>Password:</p>
-        <input name="password" type="password" value={props.formData.password} onChange={props.handleChange} />
-        <hr/>
-        <button>Login</button>
-        <Link to="/register">Register</Link>
-      </form>
-    </div>
-  );
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
+  render() {
+    const { username, password } = this.state;
+
+    return (
+      <div className="auth-container" >
+        <h2>login</h2>
+        <hr />
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          this.props.handleLogin(this.state);
+        }} >
+          <label>
+            Username:
+            <input
+              name="username"
+              type="text"
+              value={username}
+              onChange={this.handleChange}
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              name="password"
+              type="password"
+              value={password}
+              onChange={this.handleChange}
+            />
+          </label>
+          <hr />
+          <button>Login</button>
+          <Link to="/register">Register</Link>
+        </form>
+      </div>
+    );
+  }
 }
 
 export default Login;

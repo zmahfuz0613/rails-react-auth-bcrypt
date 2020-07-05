@@ -1,27 +1,54 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from 'react';
 
-function CreateTeacher(props) {
-  return (
-    <div className="create-form" >
-      <h2>Create a new teacher</h2>
-      <form onSubmit={props.newTeacher}>
-        <p>Photo Link:</p>
-        <input
-          type="text"
-          name="photo"
-          value={props.teacherForm.photo}
-          onChange={props.handleFormChange} />
-          <p>Teacher's name:</p>
-        <input
-          type="text"
-          name="name"
-          value={props.teacherForm.name}
-          onChange={props.handleFormChange} />
-        <button>Submit</button>
-      </form>
-    </div >
-  )
+class CreateTeacher extends Component {
+  state = {
+    name: "",
+    photo: ""
+  }
+
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
+  render() {
+    const { name, photo } = this.state;
+    return (
+      <div className="create-form" >
+        <h2>Create a New Teacher</h2>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          this.props.newTeacher(this.state);
+          this.setState({
+            name: "",
+            photo: ""
+          })
+        }}>
+          <label>
+            Photo Link:
+            <input
+              type="text"
+              name="photo"
+              value={photo}
+              onChange={this.handleChange}
+            />
+          </label>
+          <label>
+            Teacher's name:
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={this.handleChange}
+            />
+          </label>
+          <button>Submit</button>
+        </form>
+      </div >
+    )
+  }
 }
 
-export default withRouter(CreateTeacher);
+export default CreateTeacher;

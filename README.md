@@ -106,7 +106,7 @@ end
 
 ```
 
-Here we make sure that both the username and email are unique and present. For the email, we check to make sure that a proper email format was provided. We do this using [URI](https://ruby-doc.org/stdlib-2.1.1/libdoc/uri/rdoc/URI.html) which stands for Uniform Resoure Identifers. URI is a baked in module in Rails.
+Here we make sure that both the username and email are unique and present. For the email, we check to make sure that a proper email format was provided. We do this using [URI](https://ruby-doc.org/stdlib-2.1.1/libdoc/uri/rdoc/URI.html) which stands for Uniform Resource Identifers. URI is a baked in module in Rails.
 
 ## JSON Web Tokens
 
@@ -141,15 +141,18 @@ end
 
 The token is encoded and decoded with the built in Rails secret key. It also requires an expiration time, which we have set for 24 hours.
 
-Now, we are all set to use JWT with our custom helper methods. Let's go ahead and include a token in our response whenever a user registers:
+Now, we are all set to use JWT with our custom helper methods. Let's go ahead and include a token in our response whenever a user registers. Additionally, it is probably not a good idea to send the `password_digest` to the front end along with the rest of the user data. We can remove it by calling `.except` on the `attributes` of the `@user` object.
 
 ```ruby
   def create
     @user = User.new(user_params)
     
     if @user.save
-      @token = encode({user_id: @user.id, username: @user.username});
-      render json: {user: @user, token: @token}, status: :created, location: @user
+      @token = encode({id: @user.id,});
+      render json: {
+        user: @user.attributes.except(:password_digest),
+        token: @token
+        }, status: :created
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -175,10 +178,13 @@ class AuthenticationController < ApplicationController
 
   # POST /auth/login
   def login
-    @user = User.find_by_username(login_params[:username])
+    @user = User.find_by(username: login_params[:username])
     if @user.authenticate(login_params[:password]) #authenticate method provided by Bcrypt and 'has_secure_password'
-      token = encode(user_id: @user.id, username: @user.username)
-      render json: { user: @user, token: token }, status: :ok
+      token = encode({id: @user.id})
+      render json: {
+        user: @user.attributes.except(:password_digest),
+        token: token
+        }, status: :ok
     else
       render json: { errors: 'unauthorized' }, status: :unauthorized
     end
@@ -193,7 +199,7 @@ class AuthenticationController < ApplicationController
   private
 
   def login_params
-    params.require(:auth).permit(:username, :password)
+    params.require(:authentication).permit(:username, :password)
   end
 end
 
@@ -232,7 +238,7 @@ class ApplicationController < ActionController::API
     header = header.split(' ').last if header
     begin
       @decoded = decode(header)
-      @current_user = User.find(@decoded[:user_id])
+      @current_user = User.find(@decoded[:id])
     rescue ActiveRecord::RecordNotFound => e
       render json: { errors: e.message }, status: :unauthorized
     rescue JWT::DecodeError => e
@@ -244,7 +250,7 @@ end
 
 ```
 
-Our `authorize_request` method first grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `decode` helper method to pull the user info from the token. Then we can set an instanse variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
+Our `authorize_request` method first grabs the auth header. It then splits out the token from the header. Once we have the token, we can use our `decode` helper method to pull the user info from the token. Then we can set an instance variable `@current_user` using the user_id from the token data. Now we have the user data preset in any controller that we call the `authorize_request` method. If the user can't be found or the token isn't valid, we raise an `unauthorized` error.
 
 We can test this out by adding a before action to our `UsersController`:
 
