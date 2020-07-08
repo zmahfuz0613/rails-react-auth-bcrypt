@@ -1,24 +1,62 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 // This component handles our register form
-const Register = (props) => {
+class Register extends Component {
+  state = {
+    username: "",
+    password: ""
+  }
 
-  return (
-    <div className="auth-container">
-      <h2>Register</h2>
-      <hr />
-      <form onSubmit={props.handleRegister} >
-        <p>Username:</p>
-        <input name="username" type="text" value={props.formData.username} onChange={props.handleChange} />
-        <p>Email:</p>
-        <input name="email" type="text" value={props.formData.email} onChange={props.handleChange} />
-        <p>Password:</p>
-        <input name="password" type="password" value={props.formData.password} onChange={props.handleChange} />
-        <hr/>
-        <button>Register</button>
-      </form>
-    </div>
-  );
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
+  render() {
+    const { username, email, password } = this.state;
+    return (
+      <div className="auth-container">
+        <h2>Register</h2>
+        <hr />
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          this.props.handleRegister(this.state);
+        }} >
+          <label>
+            Username:
+            <input
+              name="username"
+              type="text"
+              value={username}
+              onChange={this.handleChange}
+            />
+          </label>
+          <label>
+            Email:
+            <input
+              name="email"
+              type="text"
+              value={email}
+              onChange={this.handleChange}
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              name="password"
+              type="password"
+              value={password}
+              onChange={this.handleChange}
+            />
+          </label>
+          <hr />
+          <button>Register</button>
+        </form>
+      </div>
+    );
+  }
 }
 
 export default Register;

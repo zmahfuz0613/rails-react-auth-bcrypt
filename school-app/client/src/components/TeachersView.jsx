@@ -1,16 +1,15 @@
 import React from 'react';
-import { withRouter } from 'react-router';
 
 function TeachersView(props) {
+  const { history, teachers, currentUser } = props;
   return (
     <div className="teacher-container">
-      {props.teachers.map(teacher => (
+      {teachers.map(teacher => (
         <div
           key={teacher.id}
           className="teacher-card"
           onClick={(e) => {
-            debugger;
-            props.history.push(`/teachers/${teacher.id}`);
+            history.push(`/teachers/${teacher.id}`);
             window.scrollTo(0, 0);
           }}>
           <img alt={teacher.name} src={teacher.photo} />
@@ -19,20 +18,22 @@ function TeachersView(props) {
           </h3>
         </div>
       ))}
-      <div
-        className="teacher-card"
-        onClick={() => {
-          props.history.push('/new/teacher');
-          window.scrollTo(0, 0);
-        }}>
-        <img
-          alt="Create a new teacher"
-          src="https://image.flaticon.com/icons/png/512/14/14980.png"
-          className="plus-sign" />
-        <h3>Create a new teacher</h3>
-      </div>
+      {currentUser && (
+        <div
+          className="teacher-card"
+          onClick={() => {
+            history.push('/new/teacher');
+            window.scrollTo(0, 0);
+          }}>
+          <img
+            alt="Create a new teacher"
+            src="https://image.flaticon.com/icons/png/512/14/14980.png"
+            className="plus-sign" />
+          <h3>Create a new teacher</h3>
+        </div>
+      )}
     </div>
   )
 }
 
-export default withRouter(TeachersView)
+export default TeachersView;
