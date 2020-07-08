@@ -5,7 +5,7 @@ export default function Header(props) {
   const { currentUser, handleLogout } = props;
   return (
     <header>
-      <h1><Link to='/' onClick={resetForm}>School App</Link></h1>
+      <h1><Link to='/'>School App</Link></h1>
       <div>
         {currentUser
           ?
@@ -14,7 +14,7 @@ export default function Header(props) {
             <button onClick={handleLogout}>logout</button>
           </>
           :
-          <link to='/login'><button>Login/register</button></link>
+          <Link to='/login'><button>Login/register</button></Link>
         }
       </div>
     </header>

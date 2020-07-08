@@ -148,7 +148,7 @@ Now, we are all set to use JWT with our custom helper methods. Let's go ahead an
     @user = User.new(user_params)
     
     if @user.save
-      @token = encode({id: @user.id,});
+      @token = encode({id: @user.id})
       render json: {
         user: @user.attributes.except(:password_digest),
         token: @token
@@ -232,6 +232,8 @@ So now we can create new Users. We can also authenticate a login attempt. We als
 
 ```ruby
 class ApplicationController < ActionController::API
+
+  ...
 
   def authorize_request
     header = request.headers['Authorization']

@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Permanent+Marker');
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   text-align: center;
   background-image: url("https://www.pixelstalk.net/wp-content/uploads/2016/08/Free-Chalkboard-Backgrounds.jpg");
@@ -27,25 +31,21 @@ header>h1>a {
   cursor: pointer;
 }
 
-header>div>button, p {
+header>div>a, p {
   margin: 0 3rem;
 }
 
 .auth-container {
-  margin: 8rem 36rem;
+  margin: 8rem 30%;
   background: #b1b1b1;
   padding: 2rem;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 .teacher-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
   grid-gap: 10px;
-  margin: 8rem 10rem;
+  margin: 8rem 10%;
 }
 
 .teacher-card {
@@ -76,4 +76,10 @@ img {
 .plus-sign {
   max-width: 4rem;
   cursor: pointer;
+}
+
+form>label {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }

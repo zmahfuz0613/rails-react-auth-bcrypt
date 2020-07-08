@@ -7,19 +7,19 @@ class EditTeacher extends Component {
   }
 
   componentDidMount() {
-    if (props.teacher) {
+    if (this.props.teacher) {
       this.setFormData();
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.state.teacher !== prevProps.teacher) {
+    if (this.props.teacher !== prevProps.teacher) {
       this.setFormData();
     }
   }
 
   setFormData = () => {
-    const { name, photo } = props.teacher;
+    const { name, photo } = this.props.teacher;
     this.setState({ name, photo })
   }
 
@@ -31,14 +31,23 @@ class EditTeacher extends Component {
   }
 
   render() {
-    const { editTeacher, history, id } = this.props;
-    const { name, photo } = this.state;
+    const {
+      updateSingleTeacher,
+      editTeacher,
+      history,
+      id
+    } = this.props;
+    const {
+      name,
+      photo
+    } = this.state;
     return (
       <div>
         <h3>Update Teacher</h3>
         <form onSubmit={(e) => {
           e.preventDefault();
-          editTeacher(this.state);
+          editTeacher(id, this.state);
+          updateSingleTeacher(this.state);
           this.setState({
             name: "",
             photo: ""

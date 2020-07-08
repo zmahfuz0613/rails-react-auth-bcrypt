@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-import { withRouter } from 'react-router';
 
 import TeachersView from './components/TeachersView';
 import TeacherPage from './components/TeacherPage';
@@ -13,11 +12,13 @@ import {
   readAllTeachers,
   updateTeacher,
   destroyTeacher,
+} from './services/teachers';
+import {
   loginUser,
   registerUser,
   verifyUser,
   removeToken
-} from './services/api-helper'
+} from './services/auth';
 
 import './App.css';
 import Header from './components/Header';
@@ -54,18 +55,17 @@ class App extends Component {
   }
 
   newTeacher = async (formData) => {
-    const teacher = await createTeacher(formData);
+    const newTeacher = await createTeacher(formData);
     this.setState(prevState => ({
-      teachers: [...prevState.teachers, teacher],
+      teachers: [...prevState.teachers, newTeacher],
     }))
   }
 
-  editTeacher = async () => {
-    const { teacherForm } = this.state
-    await updateTeacher(teacherForm.id, teacherForm);
+  editTeacher = async (id, formData) => {
+    const updatedTeacher = await updateTeacher(id, formData);
     this.setState(prevState => ({
       teachers: prevState.teachers.map(teacher => {
-        return teacher.id === teacherForm.id ? teacherForm : teacher
+        return teacher.id === id ? updatedTeacher : teacher
       }),
     }))
   }
@@ -151,12 +151,11 @@ class App extends Component {
         />
         <Route
           exact path="/"
-          render={() => (
+          render={(props) => (
             <TeachersView
+              {...props}
               teachers={this.state.teachers}
-              teacherForm={this.state.teacherForm}
-              handleFormChange={this.handleFormChange}
-              newTeacher={this.newTeacher}
+              currentUser={this.state.currentUser}
             />
           )}
         />
@@ -165,8 +164,6 @@ class App extends Component {
           render={(props) => (
             <CreateTeacher
               {...props}
-              handleFormChange={this.handleFormChange}
-              teacherForm={this.state.teacherForm}
               newTeacher={this.newTeacher}
             />
           )}
@@ -175,15 +172,11 @@ class App extends Component {
           path="/teachers/:id"
           render={(props) => {
             const { id } = props.match.params;
-            const teacher = this.state.teachers.find(el => el.id === parseInt(id));
             return <TeacherPage
               id={id}
-              teacher={teacher}
-              handleFormChange={this.handleFormChange}
-              mountEditForm={this.mountEditForm}
               editTeacher={this.editTeacher}
-              teacherForm={this.state.teacherForm}
               deleteTeacher={this.deleteTeacher}
+              currentUser={this.state.currentUser}
             />
           }}
         />
@@ -192,4 +185,4 @@ class App extends Component {
   }
 }
 
-export default withRouter(App);
+export default App;

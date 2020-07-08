@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import EditTeacher from './EditTeacher'
 import { Route } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import { readOneTeacher } from '../services/api-helper';
+import { readOneTeacher } from '../services/teachers';
 import TeacherInfo from './TeacherInfo';
 
 class TeachersPage extends Component {
@@ -29,26 +28,39 @@ class TeachersPage extends Component {
     this.setState({ teacher });
   }
 
+  updateSingleTeacher = (formData) => {
+    this.setState(prevState => ({
+      teacher: {
+        ...prevState.teacher,
+        ...formData
+      }
+    }))
+  }
+
   render() {
     const {
-      history,
+      deleteTeacher,
+      currentUser,
       editTeacher,
-      deleteTeacher
+      history,
+      id
     } = this.props;
     const { teacher } = this.state;
     return (
       <div className="teacher-page">
         {
-          teacher ? <h2>Loading . . .</h2> : (
+          teacher ? (
             <div>
               <img alt={teacher.name} src={teacher.photo} />
               <Route
                 path='/teachers/:id/edit'
                 render={() => (
                   <EditTeacher
+                    updateSingleTeacher={this.updateSingleTeacher}
                     editTeacher={editTeacher}
                     teacher={teacher}
                     history={history}
+                    id={id}
                   />
                 )}
               />
@@ -59,13 +71,15 @@ class TeachersPage extends Component {
                     teacher={teacher}
                     history={history}
                     deleteTeacher={deleteTeacher}
+                    currentUser={currentUser}
                   />
                 )}
               />
-            </div>)
+            </div>
+          ) : <h2>Loading . . .</h2>
         }
       </div>)
   }
 }
 
-export default withRouter(TeachersPage);
+export default TeachersPage;
