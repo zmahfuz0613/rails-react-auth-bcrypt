@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Switch, Route, useHistory } from 'react-router-dom';
 import Teachers from '../../screens/Teachers/Teachers';
 import TeacherCreate from '../../screens/TeacherCreate/TeacherCreate';
-import TeacherEdit from '../../screens/TeacherEdit/TeacherEdit';
 import TeacherDetail from '../../screens/TeacherDetail/TeacherDetail';
 import { readAllTeachers, createTeacher, updateTeacher, destroyTeacher } from '../../services/teachers';
 
