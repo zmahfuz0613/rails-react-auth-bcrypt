@@ -25,7 +25,6 @@
 
 *Before this lesson, students should:*
 - Be able to make a Rails app without auth
-- Have practice creating app with auth in another framework (like express)
 
 ---
 
