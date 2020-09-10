@@ -4,7 +4,7 @@
 
 1. Fork
 1. Clone
-2. `cd` into the `school-app/` directory
+2. `cd` into the repo
 3. `bundle`
 4. `cd` into `client/`
 5. `npm i`
