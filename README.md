@@ -149,7 +149,7 @@ Now, we are all set to use JWT with our custom helper methods. Let's go ahead an
     if @user.save
       @token = encode({id: @user.id})
       render json: {
-        user: @user.attributes.except(:password_digest),
+        user: @user.attributes.except('password_digest'),
         token: @token
         }, status: :created
     else
@@ -179,10 +179,10 @@ class AuthenticationController < ApplicationController
   def login
     @user = User.find_by(username: login_params[:username])
     if @user.authenticate(login_params[:password]) #authenticate method provided by Bcrypt and 'has_secure_password'
-      token = encode({id: @user.id})
+      @token = encode({ id: @user.id })
       render json: {
-        user: @user.attributes.except(:password_digest),
-        token: token
+        user: @user.attributes.except('password_digest'),
+        token: @token
         }, status: :ok
     else
       render json: { errors: 'unauthorized' }, status: :unauthorized
